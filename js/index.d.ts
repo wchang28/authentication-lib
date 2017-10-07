@@ -41,14 +41,12 @@ export interface UserMFAInfo extends UserIndetifier {
     VerifiedMobilePhoneNumber?: string;
     MFAEnabled: boolean;
     MFAStack: MFAStack;
-    TOTP: {
-        SecretHex: string;
-        CodeDeliveryMethods?: TOTPCodeDeliveryMethod[];
-    };
+    TOTPSecretHex?: string;
+    TOTPCodeDeliveryMethods?: TOTPCodeDeliveryMethod[];
 }
 export interface IMFATrackingImpl {
     verify(PrevMFATrackingId: MFATrackingId): Promise<UserMFAInfo>;
-    beginTracking(UserId: UserId, TotalFactors: number, TimeoutMS: number, AppId?: AppId): Promise<MFAAuthStatus>;
+    beginTracking(UserMFAInfo: UserMFAInfo, TimeoutMS: number, AppId?: AppId): Promise<MFAAuthStatus>;
     advanceOneFactor(PrevMFATrackingId: MFATrackingId): Promise<MFAAuthStatus>;
 }
 export interface AuthenticationProvider {
@@ -110,10 +108,14 @@ export interface IMFAAuthenticationStack {
     authenticateIrisScan(Options: AuthenticationOptions, IrisScan: IrisScan): Promise<AuthenticationResult>;
     authenticateVoice(Options: AuthenticationOptions, VoiceData: VoiceData): Promise<AuthenticationResult>;
 }
+export interface Options {
+    TimeoutMS?: number;
+}
 export declare class MFAAuthenticationStack implements IMFAAuthenticationStack {
     private authImpl;
     private static ERR_NO_PROVIDER;
-    constructor(authImpl: IAuthenticationImplementation);
+    private options;
+    constructor(authImpl: IAuthenticationImplementation, options?: Options);
     private emailOTPCode(VerifiedEmail, TOTPCode);
     private smsOTPCode(VerifiedMobilePhoneNumber, TOTPCode);
     private deliverTOTPCode(UserMFAInfo);

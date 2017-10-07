@@ -4,7 +4,9 @@
   "description": "Authentication Library",
   "main": "./js/index.js",
   "typings": "./js/index.d.ts",
-  "scripts": {},
+  "scripts": {
+    "test": "node ./js/test.js"
+  },
   "keywords": [
     "AWS",
     "Lambda"
@@ -16,6 +18,8 @@
   "author": "Wen Chang",
   "license": "MIT",
   "dependencies": {
-    "@types/node": "^8.0.31"
+    "@types/lodash": "^4.14.77",
+    "@types/node": "^8.0.31",
+    "lodash": "^4.17.4"
   }
 }

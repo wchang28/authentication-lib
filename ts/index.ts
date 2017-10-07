@@ -1,3 +1,5 @@
+import * as _ from "lodash";
+
 export type AuthenticationMethod = "Password" | "TOTPCode" | "PIN" | "SmartCard" | "Fingerprint" | "IrisScan" | "Voice";
 
 export type MFAStack = AuthenticationMethod[];
@@ -51,15 +53,13 @@ export interface UserMFAInfo extends UserIndetifier {
     VerifiedMobilePhoneNumber?: string;
     MFAEnabled: boolean;
     MFAStack: MFAStack;
-    TOTP: {
-        SecretHex: string;
-        CodeDeliveryMethods?: TOTPCodeDeliveryMethod[];
-    }
+    TOTPSecretHex?: string;
+    TOTPCodeDeliveryMethods?: TOTPCodeDeliveryMethod[];
 }
 
 export interface IMFATrackingImpl {
     verify(PrevMFATrackingId: MFATrackingId) : Promise<UserMFAInfo>;
-    beginTracking(UserId: UserId, TotalFactors: number, TimeoutMS: number, AppId?: AppId) : Promise<MFAAuthStatus>;
+    beginTracking(UserMFAInfo: UserMFAInfo, TimeoutMS: number, AppId?: AppId) : Promise<MFAAuthStatus>;
     advanceOneFactor(PrevMFATrackingId: MFATrackingId) : Promise<MFAAuthStatus>;
 }
 
@@ -116,7 +116,7 @@ export interface IAuthenticationImplementation {
 
 type GetProviderProc<C> = () => IAuthenticationProvider<C>;
 
-let TimeoutMS: number = 10 * 60 * 1000;
+
 
 export interface IMFAAuthenticationStack {
     automationAuthenticate(Username: Username, Password: Password) : Promise<UserIndetifier>;
@@ -129,11 +129,20 @@ export interface IMFAAuthenticationStack {
     authenticateVoice(Options: AuthenticationOptions, VoiceData: VoiceData) : Promise<AuthenticationResult>;
 }
 
+export interface Options {
+    TimeoutMS?: number;
+}
+
+let defaultOptions: Options = {
+    TimeoutMS: 10 * 60 * 1000   // 10 mminutes
+}
+
 export class MFAAuthenticationStack implements IMFAAuthenticationStack {
     private static ERR_NO_PROVIDER: any = {error: "bad-request", error_description: "no provider support for the authentication method"};
-
-    constructor(private authImpl: IAuthenticationImplementation) {
-
+    private options: Options;
+    constructor(private authImpl: IAuthenticationImplementation, options?: Options) {
+        options = options || defaultOptions;
+        this.options = _.assignIn({}, defaultOptions, options);
     }
 
     private emailOTPCode(VerifiedEmail: string, TOTPCode: TOTPCode) : Promise<any> {
@@ -149,8 +158,8 @@ export class MFAAuthenticationStack implements IMFAAuthenticationStack {
         return (this.authImpl.TOTPProvider ? this.authImpl.TOTPProvider.generateCode(UserMFAInfo)
         .then((TOTPCode: TOTPCode) => {
             let promises: Promise<any>[] = [];
-            for (let i in UserMFAInfo.TOTP.CodeDeliveryMethods) {
-                let TOTPCodeDeliveryMethod = UserMFAInfo.TOTP.CodeDeliveryMethods[i];
+            for (let i in UserMFAInfo.TOTPCodeDeliveryMethods) {
+                let TOTPCodeDeliveryMethod = UserMFAInfo.TOTPCodeDeliveryMethods[i];
                 if (TOTPCodeDeliveryMethod === "Email" && UserMFAInfo.VerifiedEmail) {
                     deliveries.push(TOTPCodeDeliveryMethod);
                     promises.push(this.emailOTPCode(UserMFAInfo.VerifiedEmail, TOTPCode));
@@ -177,7 +186,7 @@ export class MFAAuthenticationStack implements IMFAAuthenticationStack {
                 AuthFactor: NextAuthFactor
                 ,AuthMethod: UserMFAInfo.MFAStack[NextAuthFactor]
             };
-            if (ret.MFANext.AuthMethod === "TOTPCode" && UserMFAInfo.TOTP && UserMFAInfo.TOTP.SecretHex && UserMFAInfo.TOTP.CodeDeliveryMethods && UserMFAInfo.TOTP.CodeDeliveryMethods.length > 0) {
+            if (ret.MFANext.AuthMethod === "TOTPCode" && UserMFAInfo.TOTPSecretHex && UserMFAInfo.TOTPCodeDeliveryMethods && UserMFAInfo.TOTPCodeDeliveryMethods.length > 0) {
                 p = this.deliverTOTPCode(UserMFAInfo);
             }
         }
@@ -209,8 +218,7 @@ export class MFAAuthenticationStack implements IMFAAuthenticationStack {
             let provider = getProvider();
             return (provider ? provider.authenticate(UserMFAInfo, credential) : Promise.reject(MFAAuthenticationStack.ERR_NO_PROVIDER));    // authenticate the credential
         }).then(() => {
-            let TotalFactors = (UserMFAInfo.MFAEnabled ? UserMFAInfo.MFAStack.length : 1);
-            return (FirstFactor ? MFATracking.beginTracking(UserMFAInfo.Id, TotalFactors, TimeoutMS, Options.AppId) : MFATracking.advanceOneFactor(Options.PrevMFATrackingId));
+            return (FirstFactor ? MFATracking.beginTracking(UserMFAInfo, this.options.TimeoutMS, Options.AppId) : MFATracking.advanceOneFactor(Options.PrevMFATrackingId));
         }).then((MFAAuthStatus: MFAAuthStatus) => {
             return this.afterAuthenticated(MFAAuthStatus, UserMFAInfo);
         });

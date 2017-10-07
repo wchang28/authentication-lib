@@ -1,15 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var _ = require("lodash");
 ;
 ;
 ;
 ;
 ;
 ;
-var TimeoutMS = 10 * 60 * 1000;
+var defaultOptions = {
+    TimeoutMS: 10 * 60 * 1000 // 10 mminutes
+};
 var MFAAuthenticationStack = /** @class */ (function () {
-    function MFAAuthenticationStack(authImpl) {
+    function MFAAuthenticationStack(authImpl, options) {
         this.authImpl = authImpl;
+        options = options || defaultOptions;
+        this.options = _.assignIn({}, defaultOptions, options);
     }
     MFAAuthenticationStack.prototype.emailOTPCode = function (VerifiedEmail, TOTPCode) {
         var _this = this;
@@ -25,8 +30,8 @@ var MFAAuthenticationStack = /** @class */ (function () {
         return (this.authImpl.TOTPProvider ? this.authImpl.TOTPProvider.generateCode(UserMFAInfo)
             .then(function (TOTPCode) {
             var promises = [];
-            for (var i in UserMFAInfo.TOTP.CodeDeliveryMethods) {
-                var TOTPCodeDeliveryMethod = UserMFAInfo.TOTP.CodeDeliveryMethods[i];
+            for (var i in UserMFAInfo.TOTPCodeDeliveryMethods) {
+                var TOTPCodeDeliveryMethod = UserMFAInfo.TOTPCodeDeliveryMethods[i];
                 if (TOTPCodeDeliveryMethod === "Email" && UserMFAInfo.VerifiedEmail) {
                     deliveries.push(TOTPCodeDeliveryMethod);
                     promises.push(_this.emailOTPCode(UserMFAInfo.VerifiedEmail, TOTPCode));
@@ -54,7 +59,7 @@ var MFAAuthenticationStack = /** @class */ (function () {
                 AuthFactor: NextAuthFactor,
                 AuthMethod: UserMFAInfo.MFAStack[NextAuthFactor]
             };
-            if (ret.MFANext.AuthMethod === "TOTPCode" && UserMFAInfo.TOTP && UserMFAInfo.TOTP.SecretHex && UserMFAInfo.TOTP.CodeDeliveryMethods && UserMFAInfo.TOTP.CodeDeliveryMethods.length > 0) {
+            if (ret.MFANext.AuthMethod === "TOTPCode" && UserMFAInfo.TOTPSecretHex && UserMFAInfo.TOTPCodeDeliveryMethods && UserMFAInfo.TOTPCodeDeliveryMethods.length > 0) {
                 p = this.deliverTOTPCode(UserMFAInfo);
             }
         }
@@ -87,8 +92,7 @@ var MFAAuthenticationStack = /** @class */ (function () {
             var provider = getProvider();
             return (provider ? provider.authenticate(UserMFAInfo, credential) : Promise.reject(MFAAuthenticationStack.ERR_NO_PROVIDER)); // authenticate the credential
         }).then(function () {
-            var TotalFactors = (UserMFAInfo.MFAEnabled ? UserMFAInfo.MFAStack.length : 1);
-            return (FirstFactor ? MFATracking.beginTracking(UserMFAInfo.Id, TotalFactors, TimeoutMS, Options.AppId) : MFATracking.advanceOneFactor(Options.PrevMFATrackingId));
+            return (FirstFactor ? MFATracking.beginTracking(UserMFAInfo, _this.options.TimeoutMS, Options.AppId) : MFATracking.advanceOneFactor(Options.PrevMFATrackingId));
         }).then(function (MFAAuthStatus) {
             return _this.afterAuthenticated(MFAAuthStatus, UserMFAInfo);
         });
