@@ -93,9 +93,7 @@ var MFAAuthenticationStack = /** @class */ (function () {
             return (provider ? provider.authenticate(UserMFAInfo, credential) : Promise.reject(MFAAuthenticationStack.ERR_NO_PROVIDER)); // authenticate the credential
         }).then(function () {
             return (FirstFactor ? MFATracking.beginTracking(UserMFAInfo, _this.options.TimeoutMS, Options.AppId) : MFATracking.advanceOneFactor(Options.PrevMFATrackingId));
-        }).then(function (MFAAuthStatus) {
-            return _this.afterAuthenticated(MFAAuthStatus, UserMFAInfo);
-        });
+        }).then(function (MFAAuthStatus) { return _this.afterAuthenticated(MFAAuthStatus, UserMFAInfo); });
     };
     MFAAuthenticationStack.prototype.authenticatePassword = function (Options, Password) {
         var _this = this;

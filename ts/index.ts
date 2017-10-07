@@ -219,9 +219,7 @@ export class MFAAuthenticationStack implements IMFAAuthenticationStack {
             return (provider ? provider.authenticate(UserMFAInfo, credential) : Promise.reject(MFAAuthenticationStack.ERR_NO_PROVIDER));    // authenticate the credential
         }).then(() => {
             return (FirstFactor ? MFATracking.beginTracking(UserMFAInfo, this.options.TimeoutMS, Options.AppId) : MFATracking.advanceOneFactor(Options.PrevMFATrackingId));
-        }).then((MFAAuthStatus: MFAAuthStatus) => {
-            return this.afterAuthenticated(MFAAuthStatus, UserMFAInfo);
-        });
+        }).then((MFAAuthStatus: MFAAuthStatus) => this.afterAuthenticated(MFAAuthStatus, UserMFAInfo));
     }
 
     authenticatePassword(Options: AuthenticationOptions, Password: Password) : Promise<AuthenticationResult> {
