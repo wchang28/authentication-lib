@@ -7,15 +7,15 @@ interface UserInfoDBRow extends authLib.UserMFAInfo {
 
 let Userdb: {[Username: string]: UserInfoDBRow} = {
     "wchang28@hotmail.com": {
-            Id: "854735894564246468"
-            ,Username: "wchang28@hotmail.com"
-            ,VerifiedEmail: "wchang28@hotmail.com"
-            ,VerifiedMobilePhoneNumber: ""
-            ,MFAEnabled: true
-            ,MFAStack: ["Password", "TOTPCode"]
-            ,TOTPSecretHex: "76596465AC8B8756"
-            ,TOTPCodeDeliveryMethods: ["Email", "SMS", "AuthenticatorAppOrToken"]
-            ,Password: "76t324!@78"
+        Id: "854735894564246468"
+        ,Username: "wchang28@hotmail.com"
+        ,VerifiedEmail: "wchang28@hotmail.com"
+        ,VerifiedMobilePhoneNumber: ""
+        ,MFAEnabled: true
+        ,MFAStack: ["Password", "TOTPCode"]
+        ,TOTPSecretHex: "76596465AC8B8756"
+        ,TOTPCodeDeliveryMethods: ["Email", "SMS", "AuthenticatorAppOrToken"]
+        ,Password: "76t324!@78"
     }
 };
 
