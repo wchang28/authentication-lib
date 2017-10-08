@@ -127,8 +127,8 @@ var AuthImplementation = /** @class */ (function () {
     };
     return AuthImplementation;
 }());
-var statck = new authLib.MFAAuthenticationStack(new AuthImplementation());
-statck.authenticatePassword({ Username: "wchang28@hotmail.com" }, "76t324!@78")
+var stack = new authLib.MFAAuthenticationStack(new AuthImplementation());
+stack.authenticatePassword({ Username: "wchang28@hotmail.com" }, "76t324!@78")
     .then(function (result) {
     console.log(JSON.stringify(result, null, 2));
 }).catch(function (err) {

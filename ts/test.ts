@@ -84,9 +84,9 @@ class AuthImplementation implements authLib.IAuthenticationImplementation {
     }
 }
 
-let statck = new authLib.MFAAuthenticationStack(new AuthImplementation());
+let stack = new authLib.MFAAuthenticationStack(new AuthImplementation());
 
-statck.authenticatePassword({Username: "wchang28@hotmail.com"}, "76t324!@78")
+stack.authenticatePassword({Username: "wchang28@hotmail.com"}, "76t324!@78")
 .then((result: authLib.AuthenticationResult) => {
     console.log(JSON.stringify(result, null, 2));
 }).catch((err: any) => {
