@@ -1,12 +1,14 @@
 import * as authLib from "./";
 export interface Options {
-    issuer: string;
-    algorithm: string;
-    digits: number;
-    period: number;
+    issuer?: string;
+    algorithm?: string;
+    digits?: number;
+    period?: number;
+    window?: number;
 }
 export declare class TOTPProvider implements authLib.ITOTPProvider {
-    constructor();
+    private options;
+    constructor(options?: Options);
     private factory(label, secretHex);
     readonly Name: string;
     readonly CanStoreCredential: boolean;

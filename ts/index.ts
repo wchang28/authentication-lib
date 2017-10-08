@@ -45,7 +45,7 @@ export interface AuthenticationResult {
 
 export interface UserIndetifier {
     Id: UserId;
-    Name: Username;
+    Username: Username;
 }
 
 export interface UserMFAInfo extends UserIndetifier {
@@ -203,7 +203,7 @@ export class MFAAuthenticationStack implements IMFAAuthenticationStack {
             UserMFAInfo = value;
             return this.authImpl.PasswordProvider.authenticate(UserMFAInfo, Password);
         }).then(() => {
-            return {Id: UserMFAInfo.Id, Name: UserMFAInfo.Name};
+            return {Id: UserMFAInfo.Id, Username: UserMFAInfo.Username};
         });
     }
 

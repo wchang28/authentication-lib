@@ -77,7 +77,7 @@ var MFAAuthenticationStack = /** @class */ (function () {
             UserMFAInfo = value;
             return _this.authImpl.PasswordProvider.authenticate(UserMFAInfo, Password);
         }).then(function () {
-            return { Id: UserMFAInfo.Id, Name: UserMFAInfo.Name };
+            return { Id: UserMFAInfo.Id, Username: UserMFAInfo.Username };
         });
     };
     MFAAuthenticationStack.prototype.authenticate = function (proc, Options, credential) {

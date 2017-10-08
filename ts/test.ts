@@ -8,7 +8,7 @@ interface UserInfoDBRow extends authLib.UserMFAInfo {
 let Userdb: {[Username: string]: UserInfoDBRow} = {
     "wchang28@hotmail.com": {
             Id: "854735894564246468"
-            ,Name: "wchang28@hotmail.com"
+            ,Username: "wchang28@hotmail.com"
             ,VerifiedEmail: "wchang28@hotmail.com"
             ,VerifiedMobilePhoneNumber: ""
             ,MFAEnabled: true
@@ -59,14 +59,13 @@ class PasswordProvider implements authLib.IPasswordProvider {
     get Name(): string {return "Simple Password Authentication Provider";}
     get CanStoreCredential(): boolean {return false;}
     authenticate(UserMFAInfo: authLib.UserMFAInfo, Credential: authLib.Password) : Promise<void> {
-        let info = Userdb[UserMFAInfo.Name];
+        let info = Userdb[UserMFAInfo.Username];
         return (info && info.Password === Credential ? Promise.resolve() : Promise.reject({error: "unauthorized", error_description: "invalid ore bad password"}));
     }
     storeCredential(UserIndetifier: authLib.UserIndetifier, Credential: authLib.Password) : Promise<void> {
         return Promise.reject({error: "bad-request", error_description: "credential storage not supported by the provider"});
     }
 }
-
 
 class AuthImplementation implements authLib.IAuthenticationImplementation {
     get MFATracking(): authLib.IMFATrackingImpl {return new MFATrackingImpl();}

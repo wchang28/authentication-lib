@@ -34,7 +34,7 @@ export interface AuthenticationResult {
 }
 export interface UserIndetifier {
     Id: UserId;
-    Name: Username;
+    Username: Username;
 }
 export interface UserMFAInfo extends UserIndetifier {
     VerifiedEmail?: string;

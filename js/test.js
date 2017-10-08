@@ -5,7 +5,7 @@ var totp = require("./totp-provider");
 var Userdb = {
     "wchang28@hotmail.com": {
         Id: "854735894564246468",
-        Name: "wchang28@hotmail.com",
+        Username: "wchang28@hotmail.com",
         VerifiedEmail: "wchang28@hotmail.com",
         VerifiedMobilePhoneNumber: "",
         MFAEnabled: true,
@@ -60,7 +60,7 @@ var PasswordProvider = /** @class */ (function () {
         configurable: true
     });
     PasswordProvider.prototype.authenticate = function (UserMFAInfo, Credential) {
-        var info = Userdb[UserMFAInfo.Name];
+        var info = Userdb[UserMFAInfo.Username];
         return (info && info.Password === Credential ? Promise.resolve() : Promise.reject({ error: "unauthorized", error_description: "invalid ore bad password" }));
     };
     PasswordProvider.prototype.storeCredential = function (UserIndetifier, Credential) {

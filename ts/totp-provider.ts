@@ -1,39 +1,54 @@
 import * as authLib from "./";
+import * as _ from "lodash";
 const OTPAuth = require('otpauth');
 
 export interface Options {
-    issuer: string;
-    algorithm: string;
-    digits: number; // number of digits in the passcode
-    period: number; // number of seconds until the passcode changed
+    issuer?: string;
+    algorithm?: string;
+    digits?: number; // number of digits in the passcode
+    period?: number; // number of seconds until the passcode changed
+    window?: number;
 }
+
+let defaultOptions: Options = {
+    issuer: "ACME"
+    ,algorithm: "SHA1"
+    ,digits: 6
+    ,period: 30
+    ,window: 10
+};
+
 export class TOTPProvider implements authLib.ITOTPProvider {
-    constructor() {
-        
+    private options: Options;
+    constructor(options?: Options) {
+        options = options || defaultOptions;
+        this.options = _.assignIn({}, defaultOptions, options);        
     }
     private factory(label: string, secretHex: string) {
         let totp = new OTPAuth.TOTP({
-                issuer: 'ACME',
-                label: 'AzureDiamond',
-                algorithm: 'SHA1',
-                digits: 6,
-                period: 30,
-                secret: OTPAuth.Secret.fromB32('NB2W45DFOIZA')
+            issuer: this.options.issuer,
+            label,
+            algorithm: this.options.algorithm,
+            digits: this.options.digits,
+            period: this.options.period,
+            secret: OTPAuth.Secret.fromHex(secretHex)
         });
         return totp;
     }
     get Name(): string {return "Time-based One-time Password Authentication Provider";}
     get CanStoreCredential(): boolean {return false;}
     authenticate(UserMFAInfo: authLib.UserMFAInfo, Credential: authLib.TOTPCode) : Promise<void> {
-
+        let delta = this.factory(UserMFAInfo.Username, UserMFAInfo.TOTPSecretHex).validate({token: Credential, window: this.options.window});
+        return delta === 0 ? Promise.resolve() : Promise.reject({error: "unauthorized", error_description: "invalid or expired passcode"});
     }
     storeCredential(UserIndetifier: authLib.UserIndetifier, Credential: authLib.TOTPCode) : Promise<void> {
         return Promise.reject({error: "bad-request", error_description: "credential storage not supported by the provider"});
     }
     generateCode(UserMFAInfo: authLib.UserMFAInfo): Promise<authLib.TOTPCode> {
-
+        return Promise.resolve<authLib.TOTPCode>(this.factory(UserMFAInfo.Username, UserMFAInfo.TOTPSecretHex).generate());
     }
     generateURI(UserMFAInfo: authLib.UserMFAInfo, GenQRCode: boolean): Promise<string> {
-
+        let uri: string = this.factory(UserMFAInfo.Username, UserMFAInfo.TOTPSecretHex).toString();
+        return Promise.resolve<string>(uri);
     }
 }
