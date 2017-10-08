@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var authLib = require("./");
+var totp = require("./totp-provider");
 var Userdb = {
     "wchang28@hotmail.com": {
         Id: "854735894564246468",
@@ -60,7 +61,7 @@ var PasswordProvider = /** @class */ (function () {
     });
     PasswordProvider.prototype.authenticate = function (UserMFAInfo, Credential) {
         var info = Userdb[UserMFAInfo.Name];
-        return info && info.Password === Credential ? Promise.resolve() : Promise.reject({ error: "unauthorized", error_description: "invalid ore bad password" });
+        return (info && info.Password === Credential ? Promise.resolve() : Promise.reject({ error: "unauthorized", error_description: "invalid ore bad password" }));
     };
     PasswordProvider.prototype.storeCredential = function (UserIndetifier, Credential) {
         return Promise.reject({ error: "bad-request", error_description: "credential storage not supported by the provider" });
@@ -91,7 +92,7 @@ var AuthImplementation = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(AuthImplementation.prototype, "TOTPProvider", {
-        get: function () { return null; },
+        get: function () { return new totp.TOTPProvider(); },
         enumerable: true,
         configurable: true
     });

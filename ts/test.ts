@@ -1,4 +1,5 @@
 import * as authLib from "./";
+import * as totp from "./totp-provider";
 
 interface UserInfoDBRow extends authLib.UserMFAInfo {
     Password: string;
@@ -25,8 +26,7 @@ interface TrackingItem {
     ExpirationTime: number;
 }
 
-let TrackingDB: {[TrackingId: string]: TrackingItem} = {
-};
+let TrackingDB: {[TrackingId: string]: TrackingItem} = {};
 
 class MFATrackingImpl implements authLib.IMFATrackingImpl {
     verify(PrevMFATrackingId: authLib.MFATrackingId) : Promise<authLib.UserMFAInfo> {
@@ -60,19 +60,20 @@ class PasswordProvider implements authLib.IPasswordProvider {
     get CanStoreCredential(): boolean {return false;}
     authenticate(UserMFAInfo: authLib.UserMFAInfo, Credential: authLib.Password) : Promise<void> {
         let info = Userdb[UserMFAInfo.Name];
-        return info && info.Password === Credential ? Promise.resolve() : Promise.reject({error: "unauthorized", error_description: "invalid ore bad password"});
+        return (info && info.Password === Credential ? Promise.resolve() : Promise.reject({error: "unauthorized", error_description: "invalid ore bad password"}));
     }
     storeCredential(UserIndetifier: authLib.UserIndetifier, Credential: authLib.Password) : Promise<void> {
         return Promise.reject({error: "bad-request", error_description: "credential storage not supported by the provider"});
     }
 }
 
+
 class AuthImplementation implements authLib.IAuthenticationImplementation {
     get MFATracking(): authLib.IMFATrackingImpl {return new MFATrackingImpl();}
     get NotificationProvider() : authLib.ISimpleNotificationProvider {return null;}
     get OTPCodeDeliveryMsgComposer(): authLib.ITOTPCodeDeliveryMsgComposer {return null;}
     get PasswordProvider(): authLib.IPasswordProvider {return new PasswordProvider();}
-    get TOTPProvider(): authLib.ITOTPProvider {return null;}
+    get TOTPProvider(): authLib.ITOTPProvider {return new totp.TOTPProvider();}
     get PINProvider(): authLib.IPINProvider {return null;}
     get SmartCardProvider(): authLib.ISmartCardProvider {return null;}
     get FingerprintProvider(): authLib.IFingerprintProvider {return null;}

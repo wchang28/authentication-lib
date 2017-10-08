@@ -20,6 +20,7 @@
   "dependencies": {
     "@types/lodash": "^4.14.77",
     "@types/node": "^8.0.31",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "otpauth": "^3.1.1"
   }
 }
