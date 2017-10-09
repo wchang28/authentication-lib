@@ -125,10 +125,21 @@ class AuthImplementation implements authLib.IAuthenticationImplementation {
     }
 }
 
-let authStack = authLib.stack(new AuthImplementation());
+let passcode:  authLib.TOTPCode = null;
 
-authStack.authenticatePassword({Username: "wchang28@hotmail.com"}, "76t324!@78")
+let authStack = authLib.stack(new AuthImplementation());
+authStack.on("totp-passcode-generated", (UserMFAInfo: authLib.UserMFAInfo, TOTPCode: authLib.TOTPCode) => {
+    console.log("passcode " + TOTPCode + " generated for user " + UserMFAInfo.Username);
+    passcode = TOTPCode;
+}).authenticatePassword({Username: "wchang28@hotmail.com"}, "76t324!@78")
 .then((result: authLib.AuthenticationResult) => {
+    console.log("");
+    console.log("After factor 1 authentication:");
+    console.log(JSON.stringify(result, null, 2));
+    return authStack.authenticateTOTP({PrevMFATrackingId: result.MFAAuthStatus.TrackingId}, passcode) 
+}).then((result: authLib.AuthenticationResult) => {
+    console.log("");
+    console.log("After factor 2 authentication:");
     console.log(JSON.stringify(result, null, 2));
 }).catch((err: any) => {
     console.error("!!! Error: "  + JSON.stringify(err));
