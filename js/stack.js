@@ -120,5 +120,6 @@ var MFAAuthenticationStack = /** @class */ (function () {
     MFAAuthenticationStack.ERR_NO_PROVIDER = { error: "bad-request", error_description: "no provider support for the authentication method" };
     return MFAAuthenticationStack;
 }());
-exports.MFAAuthenticationStack = MFAAuthenticationStack;
+function get(authImpl, options) { return new MFAAuthenticationStack(authImpl, options); }
+exports.get = get;
 //# sourceMappingURL=stack.js.map

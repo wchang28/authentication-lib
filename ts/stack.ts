@@ -11,7 +11,7 @@ let defaultOptions: Options = {
     TimeoutMS: 10 * 60 * 1000   // 10 mminutes
 }
 
-export class MFAAuthenticationStack implements types.IMFAAuthenticationStack {
+class MFAAuthenticationStack implements types.IMFAAuthenticationStack {
     private static ERR_NO_PROVIDER: any = {error: "bad-request", error_description: "no provider support for the authentication method"};
     private options: Options;
     constructor(private authImpl: types.IAuthenticationImplementation, options?: Options) {
@@ -124,3 +124,5 @@ export class MFAAuthenticationStack implements types.IMFAAuthenticationStack {
         return this.authenticate(() => this.authImpl.VoiceProvider, Options, VoiceData);
     }
 }
+
+export function get(authImpl: types.IAuthenticationImplementation, options?: Options) : types.IMFAAuthenticationStack {return new MFAAuthenticationStack(authImpl, options);}
