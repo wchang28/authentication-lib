@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var authLib = require("./");
+var authLib = require("../");
 var UsersTable = {
     "wchang28@hotmail.com": {
         Id: "854735894564246468",
@@ -275,4 +275,4 @@ authStack.authenticatePassword({ Username: "wchang28@hotmail.com" }, "76t324!@78
 }).catch(function (err) {
     console.error("!!! Error: " + JSON.stringify(err));
 });
-//# sourceMappingURL=test.js.map
+//# sourceMappingURL=app.js.map

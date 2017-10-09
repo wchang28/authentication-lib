@@ -1,4 +1,4 @@
-import * as authLib from "./";
+import * as authLib from "../";
 
 interface UserRSRow extends authLib.UserMFAInfo {
     Password: authLib.Password;

@@ -5,7 +5,7 @@
   "main": "./js/index.js",
   "typings": "./js/index.d.ts",
   "scripts": {
-    "test": "node ./js/test.js"
+    "test": "node ./js/test/app.js"
   },
   "keywords": [
     "MFA",
