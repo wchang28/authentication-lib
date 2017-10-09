@@ -39,7 +39,7 @@ class TOTPProvider implements authLib.ITOTPProvider {
     get CanStoreCredential(): boolean {return false;}
     authenticate(UserMFAInfo: authLib.UserMFAInfo, Credential: authLib.TOTPCode) : Promise<void> {
         let delta = this.factory(UserMFAInfo.Username, UserMFAInfo.TOTPSecretHex).validate({token: Credential, window: this.options.window});
-        return delta === 0 ? Promise.resolve() : Promise.reject({error: "unauthorized", error_description: "invalid or expired passcode"});
+        return delta != null ? Promise.resolve() : Promise.reject({error: "unauthorized", error_description: "invalid or expired passcode"});
     }
     storeCredential(UserIndetifier: authLib.UserIndetifier, Credential: authLib.TOTPCode) : Promise<void> {
         return Promise.reject({error: "bad-request", error_description: "credential storage not supported by the provider"});

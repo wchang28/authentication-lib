@@ -37,7 +37,7 @@ var TOTPProvider = /** @class */ (function () {
     });
     TOTPProvider.prototype.authenticate = function (UserMFAInfo, Credential) {
         var delta = this.factory(UserMFAInfo.Username, UserMFAInfo.TOTPSecretHex).validate({ token: Credential, window: this.options.window });
-        return delta === 0 ? Promise.resolve() : Promise.reject({ error: "unauthorized", error_description: "invalid or expired passcode" });
+        return delta != null ? Promise.resolve() : Promise.reject({ error: "unauthorized", error_description: "invalid or expired passcode" });
     };
     TOTPProvider.prototype.storeCredential = function (UserIndetifier, Credential) {
         return Promise.reject({ error: "bad-request", error_description: "credential storage not supported by the provider" });
