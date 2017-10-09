@@ -113,6 +113,7 @@ export interface IAuthenticationImplementation {
 }
 
 export interface IMFAAuthenticationStack {
+    readonly AuthenticationImplementation: IAuthenticationImplementation;
     automationAuthenticate(Username: Username, Password: Password) : Promise<UserIndetifier>;
     authenticatePassword(Options: AuthenticationOptions, Password: Password) : Promise<AuthenticationResult>;
     authenticateTOTP(Options: AuthenticationOptions, TOTPCode: TOTPCode) : Promise<AuthenticationResult>;

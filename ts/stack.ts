@@ -21,6 +21,8 @@ class MFAAuthenticationStack extends events.EventEmitter implements types.IMFAAu
         this.options = _.assignIn({}, defaultOptions, options);
     }
 
+    get AuthenticationImplementation(): types.IAuthenticationImplementation {return this.authImpl;}
+
     private emailOTPCode(VerifiedEmail: string, TOTPCode: types.TOTPCode) : Promise<any> {
         return this.authImpl.TOTPCodeDeliveryMsgComposer.composeEmailMsg(TOTPCode).then((Message: types.NotificationMessage) => this.authImpl.NotificationProvider.sendEmail(VerifiedEmail, Message));
     }

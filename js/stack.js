@@ -24,6 +24,11 @@ var MFAAuthenticationStack = /** @class */ (function (_super) {
         _this.options = _.assignIn({}, defaultOptions, options);
         return _this;
     }
+    Object.defineProperty(MFAAuthenticationStack.prototype, "AuthenticationImplementation", {
+        get: function () { return this.authImpl; },
+        enumerable: true,
+        configurable: true
+    });
     MFAAuthenticationStack.prototype.emailOTPCode = function (VerifiedEmail, TOTPCode) {
         var _this = this;
         return this.authImpl.TOTPCodeDeliveryMsgComposer.composeEmailMsg(TOTPCode).then(function (Message) { return _this.authImpl.NotificationProvider.sendEmail(VerifiedEmail, Message); });
