@@ -97,6 +97,7 @@ export interface IAuthenticationImplementation {
     readonly IrisScanProvider: IIrisScanProvider;
     readonly VoiceProvider: IVoiceProvider;
     lookupUser(Username: Username): Promise<UserMFAInfo>;
+    toJSON(): any;
 }
 export interface IMFAAuthenticationStack {
     readonly Implementation: IAuthenticationImplementation;
@@ -109,4 +110,5 @@ export interface IMFAAuthenticationStack {
     authenticateIrisScan(Options: AuthenticationOptions, IrisScan: IrisScan): Promise<AuthenticationResult>;
     authenticateVoice(Options: AuthenticationOptions, VoiceData: VoiceData): Promise<AuthenticationResult>;
     on(event: "totp-passcode-generated", listener: (UserMFAInfo: UserMFAInfo, TOTPCode: TOTPCode) => void): this;
+    toJSON(): any;
 }

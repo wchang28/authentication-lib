@@ -137,6 +137,12 @@ var MFAAuthenticationStack = /** @class */ (function (_super) {
         var _this = this;
         return this.authenticate(function () { return _this.authImpl.VoiceProvider; }, Options, VoiceData);
     };
+    MFAAuthenticationStack.prototype.toJSON = function () {
+        return {
+            Options: this.options,
+            Implementation: this.Implementation.toJSON()
+        };
+    };
     MFAAuthenticationStack.ERR_NO_PROVIDER = { error: "bad-request", error_description: "no provider support for the authentication method" };
     return MFAAuthenticationStack;
 }(events.EventEmitter));

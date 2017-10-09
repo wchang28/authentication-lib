@@ -191,6 +191,9 @@ var AuthImplementation = /** @class */ (function () {
         var info = UsersTable[Username];
         return info ? Promise.resolve(info) : Promise.reject({ error: "not-found", error_description: "user not found" });
     };
+    AuthImplementation.prototype.toJSON = function () {
+        return {};
+    };
     return AuthImplementation;
 }());
 var authStack = authLib.stack(new AuthImplementation());

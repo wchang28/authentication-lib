@@ -128,6 +128,13 @@ class MFAAuthenticationStack extends events.EventEmitter implements types.IMFAAu
     authenticateVoice(Options: types.AuthenticationOptions, VoiceData: types.VoiceData) : Promise<types.AuthenticationResult> {
         return this.authenticate(() => this.authImpl.VoiceProvider, Options, VoiceData);
     }
+
+    toJSON() : any {
+        return {
+            Options: this.options
+            ,Implementation: this.Implementation.toJSON()
+        };
+    }
 }
 
 export function get(authImpl: types.IAuthenticationImplementation, options?: Options) : types.IMFAAuthenticationStack {return new MFAAuthenticationStack(authImpl, options);}

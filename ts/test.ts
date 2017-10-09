@@ -145,6 +145,12 @@ class AuthImplementation implements authLib.IAuthenticationImplementation {
         let info = UsersTable[Username];
         return info ? Promise.resolve<authLib.UserMFAInfo>(info) : Promise.reject({error: "not-found", error_description: "user not found"});
     }
+
+    toJSON() : any {
+        return {
+            
+        };
+    }
 }
 
 let authStack = authLib.stack(new AuthImplementation());
