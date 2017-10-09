@@ -101,7 +101,7 @@ export interface ITOTPCodeDeliveryMsgComposer {
 export interface IAuthenticationImplementation {
     readonly MFATracking: IMFATrackingImpl;
     readonly NotificationProvider: ISimpleNotificationProvider;
-    readonly OTPCodeDeliveryMsgComposer: ITOTPCodeDeliveryMsgComposer;
+    readonly TOTPCodeDeliveryMsgComposer: ITOTPCodeDeliveryMsgComposer;
     readonly PasswordProvider: IPasswordProvider;
     readonly TOTPProvider: ITOTPProvider;
     readonly PINProvider: IPINProvider;

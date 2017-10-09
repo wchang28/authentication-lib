@@ -83,7 +83,7 @@ var AuthImplementation = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(AuthImplementation.prototype, "OTPCodeDeliveryMsgComposer", {
+    Object.defineProperty(AuthImplementation.prototype, "TOTPCodeDeliveryMsgComposer", {
         get: function () { return null; },
         enumerable: true,
         configurable: true

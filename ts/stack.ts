@@ -20,11 +20,11 @@ class MFAAuthenticationStack implements types.IMFAAuthenticationStack {
     }
 
     private emailOTPCode(VerifiedEmail: string, TOTPCode: types.TOTPCode) : Promise<any> {
-        return this.authImpl.OTPCodeDeliveryMsgComposer.composeEmailMsg(TOTPCode).then((Message: types.NotificationMessage) => this.authImpl.NotificationProvider.sendEmail(VerifiedEmail, Message));
+        return this.authImpl.TOTPCodeDeliveryMsgComposer.composeEmailMsg(TOTPCode).then((Message: types.NotificationMessage) => this.authImpl.NotificationProvider.sendEmail(VerifiedEmail, Message));
     }
 
     private smsOTPCode(VerifiedMobilePhoneNumber: string, TOTPCode: types.TOTPCode) : Promise<any> {
-        return this.authImpl.OTPCodeDeliveryMsgComposer.composeSMSMsg(TOTPCode).then((Message: types.NotificationMessage) => this.authImpl.NotificationProvider.sendSMS(VerifiedMobilePhoneNumber, Message));
+        return this.authImpl.TOTPCodeDeliveryMsgComposer.composeSMSMsg(TOTPCode).then((Message: types.NotificationMessage) => this.authImpl.NotificationProvider.sendSMS(VerifiedMobilePhoneNumber, Message));
     }
 
     private deliverTOTPCode(UserMFAInfo: types.UserMFAInfo) : Promise<types.TOTPCodeDeliveryMethod[]> {

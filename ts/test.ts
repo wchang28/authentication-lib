@@ -77,7 +77,7 @@ class AuthImplementation implements authLib.IAuthenticationImplementation {
     }
     get MFATracking(): authLib.IMFATrackingImpl {return this.MFATrackingImpl;}
     get NotificationProvider() : authLib.ISimpleNotificationProvider {return null;}
-    get OTPCodeDeliveryMsgComposer(): authLib.ITOTPCodeDeliveryMsgComposer {return null;}
+    get TOTPCodeDeliveryMsgComposer(): authLib.ITOTPCodeDeliveryMsgComposer {return null;}
     get PasswordProvider(): authLib.IPasswordProvider {return this.PasswordPrvdr;}
     get TOTPProvider(): authLib.ITOTPProvider {return this.TOTPPrvdr;}
     get PINProvider(): authLib.IPINProvider {return null;}

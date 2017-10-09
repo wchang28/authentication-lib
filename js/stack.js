@@ -12,11 +12,11 @@ var MFAAuthenticationStack = /** @class */ (function () {
     }
     MFAAuthenticationStack.prototype.emailOTPCode = function (VerifiedEmail, TOTPCode) {
         var _this = this;
-        return this.authImpl.OTPCodeDeliveryMsgComposer.composeEmailMsg(TOTPCode).then(function (Message) { return _this.authImpl.NotificationProvider.sendEmail(VerifiedEmail, Message); });
+        return this.authImpl.TOTPCodeDeliveryMsgComposer.composeEmailMsg(TOTPCode).then(function (Message) { return _this.authImpl.NotificationProvider.sendEmail(VerifiedEmail, Message); });
     };
     MFAAuthenticationStack.prototype.smsOTPCode = function (VerifiedMobilePhoneNumber, TOTPCode) {
         var _this = this;
-        return this.authImpl.OTPCodeDeliveryMsgComposer.composeSMSMsg(TOTPCode).then(function (Message) { return _this.authImpl.NotificationProvider.sendSMS(VerifiedMobilePhoneNumber, Message); });
+        return this.authImpl.TOTPCodeDeliveryMsgComposer.composeSMSMsg(TOTPCode).then(function (Message) { return _this.authImpl.NotificationProvider.sendSMS(VerifiedMobilePhoneNumber, Message); });
     };
     MFAAuthenticationStack.prototype.deliverTOTPCode = function (UserMFAInfo) {
         var _this = this;
