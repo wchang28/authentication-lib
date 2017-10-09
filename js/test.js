@@ -193,12 +193,13 @@ var AuthImplementation = /** @class */ (function () {
     };
     return AuthImplementation;
 }());
-var passcode = null;
 var authStack = authLib.stack(new AuthImplementation());
+var passcode = null;
 authStack.on("totp-passcode-generated", function (UserMFAInfo, TOTPCode) {
     console.log("passcode " + TOTPCode + " generated for user " + UserMFAInfo.Username);
     passcode = TOTPCode;
-}).authenticatePassword({ Username: "wchang28@hotmail.com" }, "76t324!@78")
+});
+authStack.authenticatePassword({ Username: "wchang28@hotmail.com" }, "76t324!@78")
     .then(function (result) {
     console.log("");
     console.log("After factor 1 authentication:");
