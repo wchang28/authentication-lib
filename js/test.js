@@ -45,6 +45,25 @@ var MFATrackingImpl = /** @class */ (function () {
     };
     return MFATrackingImpl;
 }());
+var MsgComposer = /** @class */ (function () {
+    function MsgComposer() {
+    }
+    MsgComposer.prototype.composeEmailMsg = function (OTPCode) {
+        var msg = {
+            Subject: "MFA Passcode",
+            Body: "Your MFA Passcode is " + OTPCode
+        };
+        return Promise.resolve(msg);
+    };
+    MsgComposer.prototype.composeSMSMsg = function (OTPCode) {
+        var msg = {
+            Subject: "MFA Passcode",
+            Body: "Your MFA Passcode is " + OTPCode
+        };
+        return Promise.resolve(msg);
+    };
+    return MsgComposer;
+}());
 var PasswordProvider = /** @class */ (function () {
     function PasswordProvider() {
     }
@@ -70,6 +89,7 @@ var PasswordProvider = /** @class */ (function () {
 var AuthImplementation = /** @class */ (function () {
     function AuthImplementation() {
         this.MFATrackingImpl = new MFATrackingImpl();
+        this.MsgComposer = new MsgComposer();
         this.PasswordPrvdr = new PasswordProvider();
         this.TOTPPrvdr = authLib.totp({ issuer: "MyCompany" });
     }
@@ -84,7 +104,7 @@ var AuthImplementation = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(AuthImplementation.prototype, "TOTPCodeDeliveryMsgComposer", {
-        get: function () { return null; },
+        get: function () { return this.MsgComposer; },
         enumerable: true,
         configurable: true
     });

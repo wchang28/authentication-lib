@@ -54,6 +54,23 @@ class MFATrackingImpl implements authLib.IMFATrackingImpl {
     }
 }
 
+class MsgComposer implements authLib.ITOTPCodeDeliveryMsgComposer {
+    composeEmailMsg(OTPCode: authLib.TOTPCode): Promise<authLib.NotificationMessage> {
+        let msg : authLib.NotificationMessage = {
+            Subject: "MFA Passcode"
+            ,Body: "Your MFA Passcode is " + OTPCode
+        };
+        return Promise.resolve(msg);
+    }
+    composeSMSMsg(OTPCode: authLib.TOTPCode): Promise<authLib.NotificationMessage> {
+        let msg : authLib.NotificationMessage = {
+            Subject: "MFA Passcode"
+            ,Body: "Your MFA Passcode is " + OTPCode     
+        };
+        return Promise.resolve(msg);
+    }
+}
+
 class PasswordProvider implements authLib.IPasswordProvider {
     get Name(): string {return "Simple Password Authentication Provider";}
     get CanStoreCredential(): boolean {return false;}
@@ -68,16 +85,18 @@ class PasswordProvider implements authLib.IPasswordProvider {
 
 class AuthImplementation implements authLib.IAuthenticationImplementation {
     private MFATrackingImpl: authLib.IMFATrackingImpl;
+    private MsgComposer: authLib.ITOTPCodeDeliveryMsgComposer;
     private PasswordPrvdr: authLib.IPasswordProvider;
     private TOTPPrvdr: authLib.ITOTPProvider;
     constructor() {
         this.MFATrackingImpl = new MFATrackingImpl();
+        this.MsgComposer = new MsgComposer();
         this.PasswordPrvdr = new PasswordProvider();
         this.TOTPPrvdr = authLib.totp({issuer: "MyCompany"});
     }
     get MFATracking(): authLib.IMFATrackingImpl {return this.MFATrackingImpl;}
     get NotificationProvider() : authLib.ISimpleNotificationProvider {return null;}
-    get TOTPCodeDeliveryMsgComposer(): authLib.ITOTPCodeDeliveryMsgComposer {return null;}
+    get TOTPCodeDeliveryMsgComposer(): authLib.ITOTPCodeDeliveryMsgComposer {return this.MsgComposer;}
     get PasswordProvider(): authLib.IPasswordProvider {return this.PasswordPrvdr;}
     get TOTPProvider(): authLib.ITOTPProvider {return this.TOTPPrvdr;}
     get PINProvider(): authLib.IPINProvider {return null;}
