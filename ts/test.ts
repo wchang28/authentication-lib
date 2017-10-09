@@ -158,10 +158,15 @@ authStack.on("totp-passcode-generated", (UserMFAInfo: authLib.UserMFAInfo, TOTPC
     console.log("");
     console.log("After factor 1 authentication:");
     console.log(JSON.stringify(result, null, 2));
-    return authStack.authenticateTOTP({PrevMFATrackingId: result.MFAAuthStatus.TrackingId}, passcode) 
+    return authStack.authenticateTOTP({PrevMFATrackingId: result.MFAAuthStatus.TrackingId}, passcode);
 }).then((result: authLib.AuthenticationResult) => {
     console.log("");
     console.log("After factor 2 authentication:");
+    console.log(JSON.stringify(result, null, 2));
+    return authStack.authenticatePIN({PrevMFATrackingId: result.MFAAuthStatus.TrackingId}, "7743");
+}).then((result: authLib.AuthenticationResult) => {
+    console.log("");
+    console.log("After factor 3 authentication:");
     console.log(JSON.stringify(result, null, 2));
 }).catch((err: any) => {
     console.error("!!! Error: "  + JSON.stringify(err));
