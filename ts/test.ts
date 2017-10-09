@@ -73,11 +73,11 @@ class MsgComposer implements authLib.ITOTPCodeDeliveryMsgComposer {
 
 class NotificationProvider implements authLib.ISimpleNotificationProvider {
     sendEmail(VerifiedEmail: string, Message: authLib.NotificationMessage): Promise<any> {
-        console.log(JSON.stringify(Message) + " sent to " + VerifiedEmail + ".");
+        console.log("Email msg " + JSON.stringify(Message) + " sent to " + VerifiedEmail + ".");
         return Promise.resolve({});
     }
     sendSMS(VerifiedMobilePhoneNumber: string, Message: authLib.NotificationMessage): Promise<any> {
-        console.log(JSON.stringify(Message) + " sent to " + VerifiedMobilePhoneNumber + ".");
+        console.log("SMS msg " + JSON.stringify(Message) + " sent to " + VerifiedMobilePhoneNumber + ".");
         return Promise.resolve({});
     }
 }

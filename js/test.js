@@ -68,11 +68,11 @@ var NotificationProvider = /** @class */ (function () {
     function NotificationProvider() {
     }
     NotificationProvider.prototype.sendEmail = function (VerifiedEmail, Message) {
-        console.log(JSON.stringify(Message) + " sent to " + VerifiedEmail + ".");
+        console.log("Email msg " + JSON.stringify(Message) + " sent to " + VerifiedEmail + ".");
         return Promise.resolve({});
     };
     NotificationProvider.prototype.sendSMS = function (VerifiedMobilePhoneNumber, Message) {
-        console.log(JSON.stringify(Message) + " sent to " + VerifiedMobilePhoneNumber + ".");
+        console.log("SMS msg " + JSON.stringify(Message) + " sent to " + VerifiedMobilePhoneNumber + ".");
         return Promise.resolve({});
     };
     return NotificationProvider;
