@@ -64,6 +64,19 @@ var MsgComposer = /** @class */ (function () {
     };
     return MsgComposer;
 }());
+var NotificationProvider = /** @class */ (function () {
+    function NotificationProvider() {
+    }
+    NotificationProvider.prototype.sendEmail = function (VerifiedEmail, Message) {
+        console.log(JSON.stringify(Message) + " sent to " + VerifiedEmail + ".");
+        return Promise.resolve({});
+    };
+    NotificationProvider.prototype.sendSMS = function (VerifiedMobilePhoneNumber, Message) {
+        console.log(JSON.stringify(Message) + " sent to " + VerifiedMobilePhoneNumber + ".");
+        return Promise.resolve({});
+    };
+    return NotificationProvider;
+}());
 var PasswordProvider = /** @class */ (function () {
     function PasswordProvider() {
     }
@@ -90,6 +103,7 @@ var AuthImplementation = /** @class */ (function () {
     function AuthImplementation() {
         this.MFATrackingImpl = new MFATrackingImpl();
         this.MsgComposer = new MsgComposer();
+        this.NotificationPrvdr = new NotificationProvider();
         this.PasswordPrvdr = new PasswordProvider();
         this.TOTPPrvdr = authLib.totp({ issuer: "MyCompany" });
     }
@@ -99,7 +113,7 @@ var AuthImplementation = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(AuthImplementation.prototype, "NotificationProvider", {
-        get: function () { return null; },
+        get: function () { return this.NotificationPrvdr; },
         enumerable: true,
         configurable: true
     });

@@ -71,6 +71,17 @@ class MsgComposer implements authLib.ITOTPCodeDeliveryMsgComposer {
     }
 }
 
+class NotificationProvider implements authLib.ISimpleNotificationProvider {
+    sendEmail(VerifiedEmail: string, Message: authLib.NotificationMessage): Promise<any> {
+        console.log(JSON.stringify(Message) + " sent to " + VerifiedEmail + ".");
+        return Promise.resolve({});
+    }
+    sendSMS(VerifiedMobilePhoneNumber: string, Message: authLib.NotificationMessage): Promise<any> {
+        console.log(JSON.stringify(Message) + " sent to " + VerifiedMobilePhoneNumber + ".");
+        return Promise.resolve({});
+    }
+}
+
 class PasswordProvider implements authLib.IPasswordProvider {
     get Name(): string {return "Simple Password Authentication Provider";}
     get CanStoreCredential(): boolean {return false;}
@@ -86,16 +97,20 @@ class PasswordProvider implements authLib.IPasswordProvider {
 class AuthImplementation implements authLib.IAuthenticationImplementation {
     private MFATrackingImpl: authLib.IMFATrackingImpl;
     private MsgComposer: authLib.ITOTPCodeDeliveryMsgComposer;
+    private NotificationPrvdr: authLib.ISimpleNotificationProvider;
     private PasswordPrvdr: authLib.IPasswordProvider;
     private TOTPPrvdr: authLib.ITOTPProvider;
+
     constructor() {
         this.MFATrackingImpl = new MFATrackingImpl();
         this.MsgComposer = new MsgComposer();
+        this.NotificationPrvdr = new NotificationProvider();
         this.PasswordPrvdr = new PasswordProvider();
         this.TOTPPrvdr = authLib.totp({issuer: "MyCompany"});
     }
+
     get MFATracking(): authLib.IMFATrackingImpl {return this.MFATrackingImpl;}
-    get NotificationProvider() : authLib.ISimpleNotificationProvider {return null;}
+    get NotificationProvider() : authLib.ISimpleNotificationProvider {return this.NotificationPrvdr;}
     get TOTPCodeDeliveryMsgComposer(): authLib.ITOTPCodeDeliveryMsgComposer {return this.MsgComposer;}
     get PasswordProvider(): authLib.IPasswordProvider {return this.PasswordPrvdr;}
     get TOTPProvider(): authLib.ITOTPProvider {return this.TOTPPrvdr;}
