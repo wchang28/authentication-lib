@@ -81,7 +81,7 @@ var MFAAuthenticationStack = /** @class */ (function (_super) {
     MFAAuthenticationStack.prototype.automationAuthenticate = function (Username, Password) {
         var _this = this;
         var UserMFAInfo = null;
-        return this.authImpl.lookUpUser(Username)
+        return this.authImpl.lookupUser(Username)
             .then(function (value) {
             UserMFAInfo = value;
             return _this.authImpl.PasswordProvider.authenticate(UserMFAInfo, Password);
@@ -94,7 +94,7 @@ var MFAAuthenticationStack = /** @class */ (function (_super) {
         var MFATracking = this.authImpl.MFATracking;
         var UserMFAInfo = null;
         var FirstFactor = (Options.PrevMFATrackingId ? false : true);
-        return (FirstFactor ? this.authImpl.lookUpUser(Options.Username) : MFATracking.verify(Options.PrevMFATrackingId))
+        return (FirstFactor ? this.authImpl.lookupUser(Options.Username) : MFATracking.verify(Options.PrevMFATrackingId))
             .then(function (value) {
             UserMFAInfo = value;
             var getProvider = proc.bind(_this);

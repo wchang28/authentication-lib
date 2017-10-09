@@ -75,7 +75,7 @@ class MFAAuthenticationStack extends events.EventEmitter implements types.IMFAAu
 
     automationAuthenticate(Username: types.Username, Password: types.Password) : Promise<types.UserIndetifier> {
         let UserMFAInfo: types.UserMFAInfo = null;
-        return this.authImpl.lookUpUser(Username)
+        return this.authImpl.lookupUser(Username)
         .then((value: types.UserMFAInfo) => {
             UserMFAInfo = value;
             return this.authImpl.PasswordProvider.authenticate(UserMFAInfo, Password);
@@ -88,7 +88,7 @@ class MFAAuthenticationStack extends events.EventEmitter implements types.IMFAAu
         let MFATracking = this.authImpl.MFATracking;
         let UserMFAInfo: types.UserMFAInfo = null;
         let FirstFactor = (Options.PrevMFATrackingId ? false : true);
-        return (FirstFactor ? this.authImpl.lookUpUser(Options.Username) : MFATracking.verify(Options.PrevMFATrackingId))
+        return (FirstFactor ? this.authImpl.lookupUser(Options.Username) : MFATracking.verify(Options.PrevMFATrackingId))
         .then((value: types.UserMFAInfo) => {
             UserMFAInfo = value;
             let getProvider: GetProviderProc<C> = proc.bind(this);

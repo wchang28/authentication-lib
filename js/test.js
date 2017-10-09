@@ -187,7 +187,7 @@ var AuthImplementation = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    AuthImplementation.prototype.lookUpUser = function (Username) {
+    AuthImplementation.prototype.lookupUser = function (Username) {
         var info = UsersTable[Username];
         return info ? Promise.resolve(info) : Promise.reject({ error: "not-found", error_description: "user not found" });
     };

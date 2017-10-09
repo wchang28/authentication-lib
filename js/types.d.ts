@@ -96,7 +96,7 @@ export interface IAuthenticationImplementation {
     readonly FingerprintProvider: IFingerprintProvider;
     readonly IrisScanProvider: IIrisScanProvider;
     readonly VoiceProvider: IVoiceProvider;
-    lookUpUser(Username: Username): Promise<UserMFAInfo>;
+    lookupUser(Username: Username): Promise<UserMFAInfo>;
 }
 export interface IMFAAuthenticationStack {
     automationAuthenticate(Username: Username, Password: Password): Promise<UserIndetifier>;
