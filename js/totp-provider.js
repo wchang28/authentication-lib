@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var _ = require("lodash");
 var OTPAuth = require('otpauth');
+var QRCode = require("qrcode");
 var defaultOptions = {
     issuer: "ACME",
     algorithm: "SHA1",
@@ -45,12 +46,19 @@ var TOTPProvider = /** @class */ (function () {
     TOTPProvider.prototype.generateCode = function (UserMFAInfo) {
         return Promise.resolve(this.factory(UserMFAInfo.Username, UserMFAInfo.TOTPSecretHex).generate());
     };
+    TOTPProvider.prototype.toQRUri = function (text) {
+        return new Promise(function (resolve, reject) {
+            QRCode.toDataURL(text, function (err, url) {
+                if (err)
+                    reject(err);
+                else
+                    resolve(url);
+            });
+        });
+    };
     TOTPProvider.prototype.generateURI = function (UserMFAInfo, GenQRCode) {
         var uri = this.factory(UserMFAInfo.Username, UserMFAInfo.TOTPSecretHex).toString();
-        if (GenQRCode) {
-            ; // TODO:
-        }
-        return Promise.resolve(uri);
+        return (GenQRCode ? this.toQRUri(uri) : Promise.resolve(uri));
     };
     return TOTPProvider;
 }());

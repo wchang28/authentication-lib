@@ -1,6 +1,7 @@
 import * as authLib from "./";
 import * as _ from "lodash";
 const OTPAuth = require('otpauth');
+import * as QRCode from "qrcode";
 
 export interface Options {
     issuer?: string;
@@ -47,12 +48,19 @@ class TOTPProvider implements authLib.ITOTPProvider {
     generateCode(UserMFAInfo: authLib.UserMFAInfo): Promise<authLib.TOTPCode> {
         return Promise.resolve<authLib.TOTPCode>(this.factory(UserMFAInfo.Username, UserMFAInfo.TOTPSecretHex).generate());
     }
+    private toQRUri(text: string) : Promise<string> {
+        return new Promise<string>((resolve: (value: string) => void, reject: (err: any) => void) => {
+            QRCode.toDataURL(text, (err: any, url: string) => {
+                if (err)
+                    reject(err);
+                else
+                    resolve(url);
+            });
+        });
+    }
     generateURI(UserMFAInfo: authLib.UserMFAInfo, GenQRCode: boolean): Promise<string> {
         let uri: string = this.factory(UserMFAInfo.Username, UserMFAInfo.TOTPSecretHex).toString();
-        if (GenQRCode) {
-            ;   // TODO:
-        }
-        return Promise.resolve<string>(uri);
+        return (GenQRCode ? this.toQRUri(uri) : Promise.resolve<string>(uri));
     }
 }
 
