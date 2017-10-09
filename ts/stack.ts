@@ -1,4 +1,5 @@
 import * as types from "./types";
+import * as events from "events";
 import * as _ from "lodash";
 
 export interface Options {
@@ -11,10 +12,11 @@ let defaultOptions: Options = {
     TimeoutMS: 10 * 60 * 1000   // 10 mminutes
 }
 
-class MFAAuthenticationStack implements types.IMFAAuthenticationStack {
+class MFAAuthenticationStack extends events.EventEmitter implements types.IMFAAuthenticationStack {
     private static ERR_NO_PROVIDER: any = {error: "bad-request", error_description: "no provider support for the authentication method"};
     private options: Options;
     constructor(private authImpl: types.IAuthenticationImplementation, options?: Options) {
+        super();
         options = options || defaultOptions;
         this.options = _.assignIn({}, defaultOptions, options);
     }
@@ -31,6 +33,7 @@ class MFAAuthenticationStack implements types.IMFAAuthenticationStack {
         let deliveries: types.TOTPCodeDeliveryMethod[] = [];
         return (this.authImpl.TOTPProvider ? this.authImpl.TOTPProvider.generateCode(UserMFAInfo)
         .then((TOTPCode: types.TOTPCode) => {
+            this.emit("totp-passcode-generated", UserMFAInfo, TOTPCode);
             let promises: Promise<any>[] = [];
             for (let i in UserMFAInfo.TOTPCodeDeliveryMethods) {
                 let TOTPCodeDeliveryMethod = UserMFAInfo.TOTPCodeDeliveryMethods[i];

@@ -1,14 +1,28 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
+var events = require("events");
 var _ = require("lodash");
 var defaultOptions = {
     TimeoutMS: 10 * 60 * 1000 // 10 mminutes
 };
-var MFAAuthenticationStack = /** @class */ (function () {
+var MFAAuthenticationStack = /** @class */ (function (_super) {
+    __extends(MFAAuthenticationStack, _super);
     function MFAAuthenticationStack(authImpl, options) {
-        this.authImpl = authImpl;
+        var _this = _super.call(this) || this;
+        _this.authImpl = authImpl;
         options = options || defaultOptions;
-        this.options = _.assignIn({}, defaultOptions, options);
+        _this.options = _.assignIn({}, defaultOptions, options);
+        return _this;
     }
     MFAAuthenticationStack.prototype.emailOTPCode = function (VerifiedEmail, TOTPCode) {
         var _this = this;
@@ -23,6 +37,7 @@ var MFAAuthenticationStack = /** @class */ (function () {
         var deliveries = [];
         return (this.authImpl.TOTPProvider ? this.authImpl.TOTPProvider.generateCode(UserMFAInfo)
             .then(function (TOTPCode) {
+            _this.emit("totp-passcode-generated", UserMFAInfo, TOTPCode);
             var promises = [];
             for (var i in UserMFAInfo.TOTPCodeDeliveryMethods) {
                 var TOTPCodeDeliveryMethod = UserMFAInfo.TOTPCodeDeliveryMethods[i];
@@ -119,7 +134,7 @@ var MFAAuthenticationStack = /** @class */ (function () {
     };
     MFAAuthenticationStack.ERR_NO_PROVIDER = { error: "bad-request", error_description: "no provider support for the authentication method" };
     return MFAAuthenticationStack;
-}());
+}(events.EventEmitter));
 function get(authImpl, options) { return new MFAAuthenticationStack(authImpl, options); }
 exports.get = get;
 //# sourceMappingURL=stack.js.map

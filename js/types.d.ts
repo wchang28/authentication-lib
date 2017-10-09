@@ -107,4 +107,5 @@ export interface IMFAAuthenticationStack {
     authenticateFingerprint(Options: AuthenticationOptions, Fingerprint: Fingerprint): Promise<AuthenticationResult>;
     authenticateIrisScan(Options: AuthenticationOptions, IrisScan: IrisScan): Promise<AuthenticationResult>;
     authenticateVoice(Options: AuthenticationOptions, VoiceData: VoiceData): Promise<AuthenticationResult>;
+    on(event: "totp-passcode-generated", listener: (UserMFAInfo: UserMFAInfo, TOTPCode: TOTPCode) => void): this;
 }
