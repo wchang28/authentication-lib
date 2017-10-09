@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var authLib = require("./");
-var Userdb = {
+var UsersTable = {
     "wchang28@hotmail.com": {
         Id: "854735894564246468",
         Username: "wchang28@hotmail.com",
@@ -92,7 +92,7 @@ var PasswordProvider = /** @class */ (function () {
         configurable: true
     });
     PasswordProvider.prototype.authenticate = function (UserMFAInfo, Credential) {
-        var info = Userdb[UserMFAInfo.Username];
+        var info = UsersTable[UserMFAInfo.Username];
         return (info && info.Password === Credential ? Promise.resolve() : Promise.reject({ error: "unauthorized", error_description: "invalid or bad password" }));
     };
     PasswordProvider.prototype.storeCredential = function (UserIndetifier, Credential) {
@@ -114,11 +114,11 @@ var PINProvider = /** @class */ (function () {
         configurable: true
     });
     PINProvider.prototype.authenticate = function (UserMFAInfo, Credential) {
-        var info = Userdb[UserMFAInfo.Username];
+        var info = UsersTable[UserMFAInfo.Username];
         return (info && info.PIN === Credential ? Promise.resolve() : Promise.reject({ error: "unauthorized", error_description: "invalid or bad PIN" }));
     };
     PINProvider.prototype.storeCredential = function (UserIndetifier, Credential) {
-        var info = Userdb[UserIndetifier.Username];
+        var info = UsersTable[UserIndetifier.Username];
         if (info) {
             info.PIN = Credential;
             return Promise.resolve();
@@ -188,7 +188,7 @@ var AuthImplementation = /** @class */ (function () {
         configurable: true
     });
     AuthImplementation.prototype.lookUpUser = function (Username) {
-        var info = Userdb[Username];
+        var info = UsersTable[Username];
         return info ? Promise.resolve(info) : Promise.reject({ error: "not-found", error_description: "user not found" });
     };
     return AuthImplementation;

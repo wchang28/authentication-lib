@@ -1,11 +1,11 @@
 import * as authLib from "./";
 
-interface UserDBRow extends authLib.UserMFAInfo {
+interface UserRSRow extends authLib.UserMFAInfo {
     Password: authLib.Password;
     PIN: authLib.PIN;
 }
 
-let Userdb: {[Username: string]: UserDBRow} = {
+let UsersTable: {[Username: string]: UserRSRow} = {
     "wchang28@hotmail.com": {
         Id: "854735894564246468"
         ,Username: "wchang28@hotmail.com"
@@ -88,7 +88,7 @@ class PasswordProvider implements authLib.IPasswordProvider {
     get Name(): string {return "Simple Password Authentication Provider";}
     get CanStoreCredential(): boolean {return false;}
     authenticate(UserMFAInfo: authLib.UserMFAInfo, Credential: authLib.Password) : Promise<void> {
-        let info = Userdb[UserMFAInfo.Username];
+        let info = UsersTable[UserMFAInfo.Username];
         return (info && info.Password === Credential ? Promise.resolve() : Promise.reject({error: "unauthorized", error_description: "invalid or bad password"}));
     }
     storeCredential(UserIndetifier: authLib.UserIndetifier, Credential: authLib.Password) : Promise<void> {
@@ -100,11 +100,11 @@ class PINProvider implements authLib.IPINProvider {
     get Name(): string {return "Simple PIN Authentication Provider";}
     get CanStoreCredential(): boolean {return true;}
     authenticate(UserMFAInfo: authLib.UserMFAInfo, Credential: authLib.PIN) : Promise<void> {
-        let info = Userdb[UserMFAInfo.Username];
+        let info = UsersTable[UserMFAInfo.Username];
         return (info && info.PIN === Credential ? Promise.resolve() : Promise.reject({error: "unauthorized", error_description: "invalid or bad PIN"}));
     }
     storeCredential(UserIndetifier: authLib.UserIndetifier, Credential: authLib.PIN) : Promise<void> {
-        let info = Userdb[UserIndetifier.Username];
+        let info = UsersTable[UserIndetifier.Username];
         if (info) {
             info.PIN = Credential;
             return Promise.resolve();
@@ -142,7 +142,7 @@ class AuthImplementation implements authLib.IAuthenticationImplementation {
     get VoiceProvider(): authLib.IVoiceProvider {return null;}
 
     lookUpUser(Username: authLib.Username) : Promise<authLib.UserMFAInfo> {
-        let info = Userdb[Username];
+        let info = UsersTable[Username];
         return info ? Promise.resolve<authLib.UserMFAInfo>(info) : Promise.reject({error: "not-found", error_description: "user not found"});
     }
 }
