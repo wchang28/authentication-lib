@@ -30,6 +30,7 @@ interface TrackingItem {
 let TrackingDB: {[TrackingId: string]: TrackingItem} = {};
 
 class MFATrackingImpl implements authLib.IMFATrackingImpl {
+    get Name() : string {return "Example MFATracking Implementation";}
     verify(PrevMFATrackingId: authLib.MFATrackingId) : Promise<authLib.UserMFAInfo> {
         let trackingItem = TrackingDB[PrevMFATrackingId];
         if (trackingItem && new Date().getTime() < trackingItem.ExpirationTime)
@@ -54,9 +55,15 @@ class MFATrackingImpl implements authLib.IMFATrackingImpl {
         } else
             return Promise.reject({error: "unauthorized", error_description: "credential expired"});
     }
+    toJSON() : any {
+        return {
+            Name: this.Name
+        };
+    }
 }
 
 class MsgComposer implements authLib.ITOTPCodeDeliveryMsgComposer {
+    get Name(): string {return "Simple Message Composer for TOTP Passcode Notification";}
     composeEmailMsg(OTPCode: authLib.TOTPCode): Promise<authLib.NotificationMessage> {
         let msg : authLib.NotificationMessage = {
             Subject: "MFA Passcode"
@@ -71,9 +78,15 @@ class MsgComposer implements authLib.ITOTPCodeDeliveryMsgComposer {
         };
         return Promise.resolve(msg);
     }
+    toJSON(): any {
+        return {
+            Name: this.Name
+        };
+    }
 }
 
 class NotificationProvider implements authLib.ISimpleNotificationProvider {
+    get Name(): string {return "Notification Provider for Testing";}
     sendEmail(VerifiedEmail: string, Message: authLib.NotificationMessage): Promise<any> {
         console.log("Email msg " + JSON.stringify(Message) + " sent to " + VerifiedEmail + ".");
         return Promise.resolve({});
@@ -81,6 +94,11 @@ class NotificationProvider implements authLib.ISimpleNotificationProvider {
     sendSMS(VerifiedMobilePhoneNumber: string, Message: authLib.NotificationMessage): Promise<any> {
         console.log("SMS msg " + JSON.stringify(Message) + " sent to " + VerifiedMobilePhoneNumber + ".");
         return Promise.resolve({});
+    }
+    toJSON(): any {
+        return {
+            Name: this.Name
+        };
     }
 }
 
@@ -93,6 +111,12 @@ class PasswordProvider implements authLib.IPasswordProvider {
     }
     storeCredential(UserIndetifier: authLib.UserIndetifier, Credential: authLib.Password) : Promise<void> {
         return Promise.reject({error: "bad-request", error_description: "credential storage not supported by the provider"});
+    }
+    toJSON() : any {
+        return {
+            Name: this.Name
+            ,CanStoreCredential: this.CanStoreCredential
+        };
     }
 }
 
@@ -110,6 +134,12 @@ class PINProvider implements authLib.IPINProvider {
             return Promise.resolve();
         } else
             return Promise.reject({error: "not-found", error_description: "user not found"});
+    }
+    toJSON() : any {
+        return {
+            Name: this.Name
+            ,CanStoreCredential: this.CanStoreCredential
+        };
     }
 }
 
@@ -148,15 +178,23 @@ class AuthImplementation implements authLib.IAuthenticationImplementation {
 
     toJSON() : any {
         return {
-            
+            MFATracking: this.MFATracking.toJSON()
+            ,NotificationProvider: this.NotificationProvider.toJSON()
+            ,TOTPCodeDeliveryMsgComposer: this.TOTPCodeDeliveryMsgComposer.toJSON()
+            ,PasswordProvider: this.PasswordProvider.toJSON()
+            ,TOTPProvider: this.TOTPProvider.toJSON()
+            ,PINProvider: this.PINProvider.toJSON()
         };
     }
 }
 
 let authStack = authLib.stack(new AuthImplementation());
 
+console.log("Stack JSON=\n" + JSON.stringify(authStack.toJSON(), null, 2));
+
 let passcode:  authLib.TOTPCode = null;
 authStack.on("totp-passcode-generated", (UserMFAInfo: authLib.UserMFAInfo, TOTPCode: authLib.TOTPCode) => {
+    console.log("");
     console.log("passcode " + TOTPCode + " generated for user " + UserMFAInfo.Username);
     passcode = TOTPCode;
 });

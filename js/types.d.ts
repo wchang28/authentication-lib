@@ -45,13 +45,16 @@ export interface UserMFAInfo extends UserIndetifier {
     TOTPCodeDeliveryMethods?: TOTPCodeDeliveryMethod[];
 }
 export interface IMFATrackingImpl {
+    readonly Name: string;
     verify(PrevMFATrackingId: MFATrackingId): Promise<UserMFAInfo>;
     beginTracking(UserMFAInfo: UserMFAInfo, TimeoutMS: number, AppId?: AppId): Promise<MFAAuthStatus>;
     advanceOneFactor(PrevMFATrackingId: MFATrackingId): Promise<MFAAuthStatus>;
+    toJSON(): any;
 }
 export interface AuthenticationProvider {
     readonly Name: string;
     readonly CanStoreCredential: boolean;
+    toJSON(): any;
 }
 export interface IAuthenticationProvider<C> extends AuthenticationProvider {
     authenticate(UserMFAInfo: UserMFAInfo, Credential: C): Promise<void>;
@@ -78,12 +81,16 @@ export interface NotificationMessage {
     Body: string;
 }
 export interface ISimpleNotificationProvider {
+    readonly Name: string;
     sendEmail(VerifiedEmail: string, Message: NotificationMessage): Promise<any>;
     sendSMS(VerifiedMobilePhoneNumber: string, Message: NotificationMessage): Promise<any>;
+    toJSON(): any;
 }
 export interface ITOTPCodeDeliveryMsgComposer {
+    readonly Name: string;
     composeEmailMsg(OTPCode: TOTPCode): Promise<NotificationMessage>;
     composeSMSMsg(OTPCode: TOTPCode): Promise<NotificationMessage>;
+    toJSON(): any;
 }
 export interface IAuthenticationImplementation {
     readonly MFATracking: IMFATrackingImpl;

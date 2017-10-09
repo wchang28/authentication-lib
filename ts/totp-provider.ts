@@ -62,6 +62,13 @@ class TOTPProvider implements authLib.ITOTPProvider {
         let uri: string = this.factory(UserMFAInfo.Username, UserMFAInfo.TOTPSecretHex).toString();
         return (GenQRCode ? this.toQRUri(uri) : Promise.resolve<string>(uri));
     }
+    toJSON() : any {
+        return {
+            Name: this.Name
+            ,CanStoreCredential: this.CanStoreCredential
+            ,Options: this.options
+        };
+    }
 }
 
 export function get(options?: Options) : authLib.ITOTPProvider {return new TOTPProvider(options);}

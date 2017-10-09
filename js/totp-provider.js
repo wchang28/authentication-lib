@@ -60,6 +60,13 @@ var TOTPProvider = /** @class */ (function () {
         var uri = this.factory(UserMFAInfo.Username, UserMFAInfo.TOTPSecretHex).toString();
         return (GenQRCode ? this.toQRUri(uri) : Promise.resolve(uri));
     };
+    TOTPProvider.prototype.toJSON = function () {
+        return {
+            Name: this.Name,
+            CanStoreCredential: this.CanStoreCredential,
+            Options: this.options
+        };
+    };
     return TOTPProvider;
 }());
 function get(options) { return new TOTPProvider(options); }

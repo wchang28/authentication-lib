@@ -19,6 +19,11 @@ var TrackingDB = {};
 var MFATrackingImpl = /** @class */ (function () {
     function MFATrackingImpl() {
     }
+    Object.defineProperty(MFATrackingImpl.prototype, "Name", {
+        get: function () { return "Example MFATracking Implementation"; },
+        enumerable: true,
+        configurable: true
+    });
     MFATrackingImpl.prototype.verify = function (PrevMFATrackingId) {
         var trackingItem = TrackingDB[PrevMFATrackingId];
         if (trackingItem && new Date().getTime() < trackingItem.ExpirationTime)
@@ -44,11 +49,21 @@ var MFATrackingImpl = /** @class */ (function () {
         else
             return Promise.reject({ error: "unauthorized", error_description: "credential expired" });
     };
+    MFATrackingImpl.prototype.toJSON = function () {
+        return {
+            Name: this.Name
+        };
+    };
     return MFATrackingImpl;
 }());
 var MsgComposer = /** @class */ (function () {
     function MsgComposer() {
     }
+    Object.defineProperty(MsgComposer.prototype, "Name", {
+        get: function () { return "Simple Message Composer for TOTP Passcode Notification"; },
+        enumerable: true,
+        configurable: true
+    });
     MsgComposer.prototype.composeEmailMsg = function (OTPCode) {
         var msg = {
             Subject: "MFA Passcode",
@@ -63,11 +78,21 @@ var MsgComposer = /** @class */ (function () {
         };
         return Promise.resolve(msg);
     };
+    MsgComposer.prototype.toJSON = function () {
+        return {
+            Name: this.Name
+        };
+    };
     return MsgComposer;
 }());
 var NotificationProvider = /** @class */ (function () {
     function NotificationProvider() {
     }
+    Object.defineProperty(NotificationProvider.prototype, "Name", {
+        get: function () { return "Notification Provider for Testing"; },
+        enumerable: true,
+        configurable: true
+    });
     NotificationProvider.prototype.sendEmail = function (VerifiedEmail, Message) {
         console.log("Email msg " + JSON.stringify(Message) + " sent to " + VerifiedEmail + ".");
         return Promise.resolve({});
@@ -75,6 +100,11 @@ var NotificationProvider = /** @class */ (function () {
     NotificationProvider.prototype.sendSMS = function (VerifiedMobilePhoneNumber, Message) {
         console.log("SMS msg " + JSON.stringify(Message) + " sent to " + VerifiedMobilePhoneNumber + ".");
         return Promise.resolve({});
+    };
+    NotificationProvider.prototype.toJSON = function () {
+        return {
+            Name: this.Name
+        };
     };
     return NotificationProvider;
 }());
@@ -97,6 +127,12 @@ var PasswordProvider = /** @class */ (function () {
     };
     PasswordProvider.prototype.storeCredential = function (UserIndetifier, Credential) {
         return Promise.reject({ error: "bad-request", error_description: "credential storage not supported by the provider" });
+    };
+    PasswordProvider.prototype.toJSON = function () {
+        return {
+            Name: this.Name,
+            CanStoreCredential: this.CanStoreCredential
+        };
     };
     return PasswordProvider;
 }());
@@ -125,6 +161,12 @@ var PINProvider = /** @class */ (function () {
         }
         else
             return Promise.reject({ error: "not-found", error_description: "user not found" });
+    };
+    PINProvider.prototype.toJSON = function () {
+        return {
+            Name: this.Name,
+            CanStoreCredential: this.CanStoreCredential
+        };
     };
     return PINProvider;
 }());
@@ -192,13 +234,22 @@ var AuthImplementation = /** @class */ (function () {
         return info ? Promise.resolve(info) : Promise.reject({ error: "not-found", error_description: "user not found" });
     };
     AuthImplementation.prototype.toJSON = function () {
-        return {};
+        return {
+            MFATracking: this.MFATracking.toJSON(),
+            NotificationProvider: this.NotificationProvider.toJSON(),
+            TOTPCodeDeliveryMsgComposer: this.TOTPCodeDeliveryMsgComposer.toJSON(),
+            PasswordProvider: this.PasswordProvider.toJSON(),
+            TOTPProvider: this.TOTPProvider.toJSON(),
+            PINProvider: this.PINProvider.toJSON()
+        };
     };
     return AuthImplementation;
 }());
 var authStack = authLib.stack(new AuthImplementation());
+console.log("Stack JSON=\n" + JSON.stringify(authStack.toJSON(), null, 2));
 var passcode = null;
 authStack.on("totp-passcode-generated", function (UserMFAInfo, TOTPCode) {
+    console.log("");
     console.log("passcode " + TOTPCode + " generated for user " + UserMFAInfo.Username);
     passcode = TOTPCode;
 });
