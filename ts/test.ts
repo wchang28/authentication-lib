@@ -119,6 +119,7 @@ class AuthImplementation implements authLib.IAuthenticationImplementation {
     get FingerprintProvider(): authLib.IFingerprintProvider {return null;}
     get IrisScanProvider(): authLib.IIrisScanProvider {return null;}
     get VoiceProvider(): authLib.IVoiceProvider {return null;}
+    
     lookUpUser(Username: authLib.Username) : Promise<authLib.UserMFAInfo> {
         let info = Userdb[Username];
         return info ? Promise.resolve<authLib.UserMFAInfo>(info) : Promise.reject({error: "not-found", error_description: "user not found"});
