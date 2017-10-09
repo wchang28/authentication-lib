@@ -79,7 +79,7 @@ var PasswordProvider = /** @class */ (function () {
     });
     PasswordProvider.prototype.authenticate = function (UserMFAInfo, Credential) {
         var info = Userdb[UserMFAInfo.Username];
-        return (info && info.Password === Credential ? Promise.resolve() : Promise.reject({ error: "unauthorized", error_description: "invalid ore bad password" }));
+        return (info && info.Password === Credential ? Promise.resolve() : Promise.reject({ error: "unauthorized", error_description: "invalid or bad password" }));
     };
     PasswordProvider.prototype.storeCredential = function (UserIndetifier, Credential) {
         return Promise.reject({ error: "bad-request", error_description: "credential storage not supported by the provider" });
@@ -145,7 +145,7 @@ var AuthImplementation = /** @class */ (function () {
     });
     AuthImplementation.prototype.lookUpUser = function (Username) {
         var info = Userdb[Username];
-        return info ? Promise.resolve(info) : Promise.reject({ error: "not-found", error_description: "user not found on the system" });
+        return info ? Promise.resolve(info) : Promise.reject({ error: "not-found", error_description: "user not found" });
     };
     return AuthImplementation;
 }());

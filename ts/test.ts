@@ -76,7 +76,7 @@ class PasswordProvider implements authLib.IPasswordProvider {
     get CanStoreCredential(): boolean {return false;}
     authenticate(UserMFAInfo: authLib.UserMFAInfo, Credential: authLib.Password) : Promise<void> {
         let info = Userdb[UserMFAInfo.Username];
-        return (info && info.Password === Credential ? Promise.resolve() : Promise.reject({error: "unauthorized", error_description: "invalid ore bad password"}));
+        return (info && info.Password === Credential ? Promise.resolve() : Promise.reject({error: "unauthorized", error_description: "invalid or bad password"}));
     }
     storeCredential(UserIndetifier: authLib.UserIndetifier, Credential: authLib.Password) : Promise<void> {
         return Promise.reject({error: "bad-request", error_description: "credential storage not supported by the provider"});
@@ -106,7 +106,7 @@ class AuthImplementation implements authLib.IAuthenticationImplementation {
     get VoiceProvider(): authLib.IVoiceProvider {return null;}
     lookUpUser(Username: authLib.Username) : Promise<authLib.UserMFAInfo> {
         let info = Userdb[Username];
-        return info ? Promise.resolve<authLib.UserMFAInfo>(info) : Promise.reject({error: "not-found", error_description: "user not found on the system"});
+        return info ? Promise.resolve<authLib.UserMFAInfo>(info) : Promise.reject({error: "not-found", error_description: "user not found"});
     }
 }
 
