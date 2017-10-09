@@ -1,11 +1,11 @@
 import * as authLib from "./";
 
-interface UserInfoDBRow extends authLib.UserMFAInfo {
+interface UserDBRow extends authLib.UserMFAInfo {
     Password: authLib.Password;
     PIN: authLib.PIN;
 }
 
-let Userdb: {[Username: string]: UserInfoDBRow} = {
+let Userdb: {[Username: string]: UserDBRow} = {
     "wchang28@hotmail.com": {
         Id: "854735894564246468"
         ,Username: "wchang28@hotmail.com"
