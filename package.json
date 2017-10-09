@@ -8,8 +8,10 @@
     "test": "node ./js/test.js"
   },
   "keywords": [
-    "AWS",
-    "Lambda"
+    "MFA",
+    "Authentication",
+    "Stack",
+    "TOTP"
   ],
   "repository": {
     "type": "git",
