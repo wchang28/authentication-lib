@@ -8,10 +8,11 @@ var Userdb = {
         VerifiedEmail: "wchang28@hotmail.com",
         VerifiedMobilePhoneNumber: "626-333-7635",
         MFAEnabled: true,
-        MFAStack: ["Password", "TOTPCode"],
+        MFAStack: ["Password", "TOTPCode", "PIN"],
         TOTPSecretHex: "76596465AC8B8756",
         TOTPCodeDeliveryMethods: ["Email", "SMS", "AuthenticatorAppOrToken"],
-        Password: "76t324!@78"
+        Password: "76t324!@78",
+        PIN: "7743"
     }
 };
 var TrackingDB = {};
@@ -99,6 +100,34 @@ var PasswordProvider = /** @class */ (function () {
     };
     return PasswordProvider;
 }());
+var PINProvider = /** @class */ (function () {
+    function PINProvider() {
+    }
+    Object.defineProperty(PINProvider.prototype, "Name", {
+        get: function () { return "Simple PIN Authentication Provider"; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(PINProvider.prototype, "CanStoreCredential", {
+        get: function () { return true; },
+        enumerable: true,
+        configurable: true
+    });
+    PINProvider.prototype.authenticate = function (UserMFAInfo, Credential) {
+        var info = Userdb[UserMFAInfo.Username];
+        return (info && info.PIN === Credential ? Promise.resolve() : Promise.reject({ error: "unauthorized", error_description: "invalid or bad PIN" }));
+    };
+    PINProvider.prototype.storeCredential = function (UserIndetifier, Credential) {
+        var info = Userdb[UserIndetifier.Username];
+        if (info) {
+            info.PIN = Credential;
+            return Promise.resolve();
+        }
+        else
+            return Promise.reject({ error: "not-found", error_description: "user not found" });
+    };
+    return PINProvider;
+}());
 var AuthImplementation = /** @class */ (function () {
     function AuthImplementation() {
         this.MFATrackingImpl = new MFATrackingImpl();
@@ -106,6 +135,7 @@ var AuthImplementation = /** @class */ (function () {
         this.NotificationPrvdr = new NotificationProvider();
         this.PasswordPrvdr = new PasswordProvider();
         this.TOTPPrvdr = authLib.totp({ issuer: "MyCompany" });
+        this.PINPrvdr = new PINProvider();
     }
     Object.defineProperty(AuthImplementation.prototype, "MFATracking", {
         get: function () { return this.MFATrackingImpl; },
@@ -133,7 +163,7 @@ var AuthImplementation = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(AuthImplementation.prototype, "PINProvider", {
-        get: function () { return null; },
+        get: function () { return this.PINPrvdr; },
         enumerable: true,
         configurable: true
     });

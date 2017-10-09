@@ -1,7 +1,8 @@
 import * as authLib from "./";
 
 interface UserInfoDBRow extends authLib.UserMFAInfo {
-    Password: string;
+    Password: authLib.Password;
+    PIN: authLib.PIN;
 }
 
 let Userdb: {[Username: string]: UserInfoDBRow} = {
@@ -11,10 +12,11 @@ let Userdb: {[Username: string]: UserInfoDBRow} = {
         ,VerifiedEmail: "wchang28@hotmail.com"
         ,VerifiedMobilePhoneNumber: "626-333-7635"
         ,MFAEnabled: true
-        ,MFAStack: ["Password", "TOTPCode"]
+        ,MFAStack: ["Password", "TOTPCode", "PIN"]
         ,TOTPSecretHex: "76596465AC8B8756"
         ,TOTPCodeDeliveryMethods: ["Email", "SMS", "AuthenticatorAppOrToken"]
         ,Password: "76t324!@78"
+        ,PIN: "7743"
     }
 };
 
@@ -94,12 +96,30 @@ class PasswordProvider implements authLib.IPasswordProvider {
     }
 }
 
+class PINProvider implements authLib.IPINProvider {
+    get Name(): string {return "Simple PIN Authentication Provider";}
+    get CanStoreCredential(): boolean {return true;}
+    authenticate(UserMFAInfo: authLib.UserMFAInfo, Credential: authLib.PIN) : Promise<void> {
+        let info = Userdb[UserMFAInfo.Username];
+        return (info && info.PIN === Credential ? Promise.resolve() : Promise.reject({error: "unauthorized", error_description: "invalid or bad PIN"}));
+    }
+    storeCredential(UserIndetifier: authLib.UserIndetifier, Credential: authLib.PIN) : Promise<void> {
+        let info = Userdb[UserIndetifier.Username];
+        if (info) {
+            info.PIN = Credential;
+            return Promise.resolve();
+        } else
+            return Promise.reject({error: "not-found", error_description: "user not found"});
+    }
+}
+
 class AuthImplementation implements authLib.IAuthenticationImplementation {
     private MFATrackingImpl: authLib.IMFATrackingImpl;
     private MsgComposer: authLib.ITOTPCodeDeliveryMsgComposer;
     private NotificationPrvdr: authLib.ISimpleNotificationProvider;
     private PasswordPrvdr: authLib.IPasswordProvider;
     private TOTPPrvdr: authLib.ITOTPProvider;
+    private PINPrvdr: authLib.IPINProvider;
 
     constructor() {
         this.MFATrackingImpl = new MFATrackingImpl();
@@ -107,6 +127,7 @@ class AuthImplementation implements authLib.IAuthenticationImplementation {
         this.NotificationPrvdr = new NotificationProvider();
         this.PasswordPrvdr = new PasswordProvider();
         this.TOTPPrvdr = authLib.totp({issuer: "MyCompany"});
+        this.PINPrvdr = new PINProvider();
     }
 
     get MFATracking(): authLib.IMFATrackingImpl {return this.MFATrackingImpl;}
@@ -114,12 +135,12 @@ class AuthImplementation implements authLib.IAuthenticationImplementation {
     get TOTPCodeDeliveryMsgComposer(): authLib.ITOTPCodeDeliveryMsgComposer {return this.MsgComposer;}
     get PasswordProvider(): authLib.IPasswordProvider {return this.PasswordPrvdr;}
     get TOTPProvider(): authLib.ITOTPProvider {return this.TOTPPrvdr;}
-    get PINProvider(): authLib.IPINProvider {return null;}
+    get PINProvider(): authLib.IPINProvider {return this.PINPrvdr;}
     get SmartCardProvider(): authLib.ISmartCardProvider {return null;}
     get FingerprintProvider(): authLib.IFingerprintProvider {return null;}
     get IrisScanProvider(): authLib.IIrisScanProvider {return null;}
     get VoiceProvider(): authLib.IVoiceProvider {return null;}
-    
+
     lookUpUser(Username: authLib.Username) : Promise<authLib.UserMFAInfo> {
         let info = Userdb[Username];
         return info ? Promise.resolve<authLib.UserMFAInfo>(info) : Promise.reject({error: "not-found", error_description: "user not found"});
