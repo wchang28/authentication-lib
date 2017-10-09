@@ -84,8 +84,8 @@ export interface IIrisScanProvider extends IAuthenticationProvider<IrisScan> {};
 export interface IVoiceProvider extends IAuthenticationProvider<VoiceData> {};
 
 export interface NotificationMessage {
-    Body: string;
     Subject? : string;
+    Body: string;
 }
 
 export interface ISimpleNotificationProvider {
