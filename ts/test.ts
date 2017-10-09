@@ -170,7 +170,7 @@ authStack.authenticatePassword({Username: "wchang28@hotmail.com"}, "76t324!@78")
     console.log("");
     console.log("After factor 3 authentication:");
     console.log(JSON.stringify(result, null, 2));
-    return authStack.AuthenticationImplementation.TOTPProvider.generateURI(UsersTable["wchang28@hotmail.com"], true);
+    return authStack.Implementation.TOTPProvider.generateURI(UsersTable["wchang28@hotmail.com"], true);
 }).then((uri: string) => {
     console.log("");
     console.log("TOTP Uri=\n" + uri);

@@ -24,7 +24,7 @@ var MFAAuthenticationStack = /** @class */ (function (_super) {
         _this.options = _.assignIn({}, defaultOptions, options);
         return _this;
     }
-    Object.defineProperty(MFAAuthenticationStack.prototype, "AuthenticationImplementation", {
+    Object.defineProperty(MFAAuthenticationStack.prototype, "Implementation", {
         get: function () { return this.authImpl; },
         enumerable: true,
         configurable: true
