@@ -6,14 +6,4 @@ export interface Options {
     period?: number;
     window?: number;
 }
-export declare class TOTPProvider implements authLib.ITOTPProvider {
-    private options;
-    constructor(options?: Options);
-    private factory(label, secretHex);
-    readonly Name: string;
-    readonly CanStoreCredential: boolean;
-    authenticate(UserMFAInfo: authLib.UserMFAInfo, Credential: authLib.TOTPCode): Promise<void>;
-    storeCredential(UserIndetifier: authLib.UserIndetifier, Credential: authLib.TOTPCode): Promise<void>;
-    generateCode(UserMFAInfo: authLib.UserMFAInfo): Promise<authLib.TOTPCode>;
-    generateURI(UserMFAInfo: authLib.UserMFAInfo, GenQRCode: boolean): Promise<string>;
-}
+export declare function get(options?: Options): authLib.ITOTPProvider;

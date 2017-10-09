@@ -1,5 +1,4 @@
 import * as authLib from "./";
-import * as totp from "./totp-provider";
 
 interface UserInfoDBRow extends authLib.UserMFAInfo {
     Password: string;
@@ -10,7 +9,7 @@ let Userdb: {[Username: string]: UserInfoDBRow} = {
         Id: "854735894564246468"
         ,Username: "wchang28@hotmail.com"
         ,VerifiedEmail: "wchang28@hotmail.com"
-        ,VerifiedMobilePhoneNumber: ""
+        ,VerifiedMobilePhoneNumber: "626-333-7635"
         ,MFAEnabled: true
         ,MFAStack: ["Password", "TOTPCode"]
         ,TOTPSecretHex: "76596465AC8B8756"
@@ -68,11 +67,19 @@ class PasswordProvider implements authLib.IPasswordProvider {
 }
 
 class AuthImplementation implements authLib.IAuthenticationImplementation {
-    get MFATracking(): authLib.IMFATrackingImpl {return new MFATrackingImpl();}
+    private MFATrackingImpl: authLib.IMFATrackingImpl;
+    private PasswordPrvdr: authLib.IPasswordProvider;
+    private TOTPPrvdr: authLib.ITOTPProvider;
+    constructor() {
+        this.MFATrackingImpl = new MFATrackingImpl();
+        this.PasswordPrvdr = new PasswordProvider();
+        this.TOTPPrvdr = authLib.totp({issuer: "MyCompany"});
+    }
+    get MFATracking(): authLib.IMFATrackingImpl {return this.MFATrackingImpl;}
     get NotificationProvider() : authLib.ISimpleNotificationProvider {return null;}
     get OTPCodeDeliveryMsgComposer(): authLib.ITOTPCodeDeliveryMsgComposer {return null;}
-    get PasswordProvider(): authLib.IPasswordProvider {return new PasswordProvider();}
-    get TOTPProvider(): authLib.ITOTPProvider {return new totp.TOTPProvider();}
+    get PasswordProvider(): authLib.IPasswordProvider {return this.PasswordPrvdr;}
+    get TOTPProvider(): authLib.ITOTPProvider {return this.TOTPPrvdr;}
     get PINProvider(): authLib.IPINProvider {return null;}
     get SmartCardProvider(): authLib.ISmartCardProvider {return null;}
     get FingerprintProvider(): authLib.IFingerprintProvider {return null;}
@@ -84,9 +91,9 @@ class AuthImplementation implements authLib.IAuthenticationImplementation {
     }
 }
 
-let stack = authLib.stack(new AuthImplementation());
+let authStack = authLib.stack(new AuthImplementation());
 
-stack.authenticatePassword({Username: "wchang28@hotmail.com"}, "76t324!@78")
+authStack.authenticatePassword({Username: "wchang28@hotmail.com"}, "76t324!@78")
 .then((result: authLib.AuthenticationResult) => {
     console.log(JSON.stringify(result, null, 2));
 }).catch((err: any) => {

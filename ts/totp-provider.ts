@@ -18,7 +18,7 @@ let defaultOptions: Options = {
     ,window: 10
 };
 
-export class TOTPProvider implements authLib.ITOTPProvider {
+class TOTPProvider implements authLib.ITOTPProvider {
     private options: Options;
     constructor(options?: Options) {
         options = options || defaultOptions;
@@ -55,3 +55,5 @@ export class TOTPProvider implements authLib.ITOTPProvider {
         return Promise.resolve<string>(uri);
     }
 }
+
+export function get(options?: Options) : authLib.ITOTPProvider {return new TOTPProvider(options);}

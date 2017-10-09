@@ -1,3 +1,3 @@
 export * from "./types";
 export { get as stack, Options as StackOptions } from "./stack";
-export { TOTPProvider, Options as TOTPOptions } from "./totp-provider";
+export { get as totp, Options as TOTPOptions } from "./totp-provider";

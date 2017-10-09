@@ -54,5 +54,6 @@ var TOTPProvider = /** @class */ (function () {
     };
     return TOTPProvider;
 }());
-exports.TOTPProvider = TOTPProvider;
+function get(options) { return new TOTPProvider(options); }
+exports.get = get;
 //# sourceMappingURL=totp-provider.js.map

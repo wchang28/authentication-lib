@@ -1,13 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var authLib = require("./");
-var totp = require("./totp-provider");
 var Userdb = {
     "wchang28@hotmail.com": {
         Id: "854735894564246468",
         Username: "wchang28@hotmail.com",
         VerifiedEmail: "wchang28@hotmail.com",
-        VerifiedMobilePhoneNumber: "",
+        VerifiedMobilePhoneNumber: "626-333-7635",
         MFAEnabled: true,
         MFAStack: ["Password", "TOTPCode"],
         TOTPSecretHex: "76596465AC8B8756",
@@ -70,9 +69,12 @@ var PasswordProvider = /** @class */ (function () {
 }());
 var AuthImplementation = /** @class */ (function () {
     function AuthImplementation() {
+        this.MFATrackingImpl = new MFATrackingImpl();
+        this.PasswordPrvdr = new PasswordProvider();
+        this.TOTPPrvdr = authLib.totp({ issuer: "MyCompany" });
     }
     Object.defineProperty(AuthImplementation.prototype, "MFATracking", {
-        get: function () { return new MFATrackingImpl(); },
+        get: function () { return this.MFATrackingImpl; },
         enumerable: true,
         configurable: true
     });
@@ -87,12 +89,12 @@ var AuthImplementation = /** @class */ (function () {
         configurable: true
     });
     Object.defineProperty(AuthImplementation.prototype, "PasswordProvider", {
-        get: function () { return new PasswordProvider(); },
+        get: function () { return this.PasswordPrvdr; },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(AuthImplementation.prototype, "TOTPProvider", {
-        get: function () { return new totp.TOTPProvider(); },
+        get: function () { return this.TOTPPrvdr; },
         enumerable: true,
         configurable: true
     });
@@ -127,8 +129,8 @@ var AuthImplementation = /** @class */ (function () {
     };
     return AuthImplementation;
 }());
-var stack = authLib.stack(new AuthImplementation());
-stack.authenticatePassword({ Username: "wchang28@hotmail.com" }, "76t324!@78")
+var authStack = authLib.stack(new AuthImplementation());
+authStack.authenticatePassword({ Username: "wchang28@hotmail.com" }, "76t324!@78")
     .then(function (result) {
     console.log(JSON.stringify(result, null, 2));
 }).catch(function (err) {
