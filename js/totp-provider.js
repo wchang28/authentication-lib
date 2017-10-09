@@ -47,6 +47,9 @@ var TOTPProvider = /** @class */ (function () {
     };
     TOTPProvider.prototype.generateURI = function (UserMFAInfo, GenQRCode) {
         var uri = this.factory(UserMFAInfo.Username, UserMFAInfo.TOTPSecretHex).toString();
+        if (GenQRCode) {
+            ; // TODO:
+        }
         return Promise.resolve(uri);
     };
     return TOTPProvider;

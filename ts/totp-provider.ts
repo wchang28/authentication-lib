@@ -49,6 +49,9 @@ export class TOTPProvider implements authLib.ITOTPProvider {
     }
     generateURI(UserMFAInfo: authLib.UserMFAInfo, GenQRCode: boolean): Promise<string> {
         let uri: string = this.factory(UserMFAInfo.Username, UserMFAInfo.TOTPSecretHex).toString();
+        if (GenQRCode) {
+            ;   // TODO:
+        }
         return Promise.resolve<string>(uri);
     }
 }
